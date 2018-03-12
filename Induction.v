@@ -157,26 +157,38 @@ Proof.
 Theorem mult_0_r : forall n:nat,
   n * 0 = 0.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction n.
+  - reflexivity.
+  - simpl. rewrite -> IHn. reflexivity.
+  Qed.
 (* GRADE_THEOREM 0.5: mult_0_r *)
 
 Theorem plus_n_Sm : forall n m : nat,
   S (n + m) = n + (S m).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction n.
+  - simpl. reflexivity.
+  - intros. simpl. rewrite <- IHn. reflexivity.
+  Qed.
 (* GRADE_THEOREM 0.5: plus_n_Sm *)
 
 
 Theorem plus_comm : forall n m : nat,
   n + m = m + n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction n.
+  - intros. simpl. rewrite <- plus_n_O. reflexivity.
+  - intros. simpl. rewrite -> IHn. rewrite -> plus_n_Sm. reflexivity.
+  Qed.
 (* GRADE_THEOREM 0.5: plus_comm *)
 
 Theorem plus_assoc : forall n m p : nat,
   n + (m + p) = (n + m) + p.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction n.
+  - simpl. reflexivity.
+  - intros. simpl. rewrite -> IHn. reflexivity.
+  Qed.
 (* GRADE_THEOREM 0.5: plus_assoc *)
 (** [] *)
 
@@ -193,7 +205,10 @@ Fixpoint double (n:nat) :=
 
 Lemma double_plus : forall n, double n = n + n .
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction n.
+  - simpl. reflexivity.
+  - simpl. rewrite -> IHn. simpl. rewrite -> plus_n_Sm. reflexivity.
+  Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, optional (evenb_S)  *)
@@ -204,10 +219,11 @@ Proof.
     alternative characterization of [evenb (S n)] that works better
     with induction: *)
 
+(**
 Theorem evenb_S : forall n : nat,
   evenb (S n) = negb (evenb n).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  (* FILL IN HERE *) Admitted.*)
 (** [] *)
 
 (** **** Exercise: 1 star (destruct_induction)  *)
@@ -438,7 +454,10 @@ Proof.
 Theorem plus_swap : forall n m p : nat,
   n + (m + p) = m + (n + p).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. rewrite -> plus_assoc. rewrite -> plus_assoc.
+  assert (H: n+m=m+n). {rewrite -> plus_comm. reflexivity. }
+  rewrite -> H. reflexivity.
+  Qed.
 
 (** Now prove commutativity of multiplication.  (You will probably
     need to define and prove a separate subsidiary theorem to be used
@@ -448,7 +467,16 @@ Proof.
 Theorem mult_comm : forall m n : nat,
   m * n = n * m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction m.
+  - intros. simpl. rewrite -> mult_0_r. reflexivity.
+  - intros. simpl. assert (n * S m = n + n*m). {
+      induction n.
+      * simpl. reflexivity.
+      * simpl. rewrite -> IHn. rewrite -> plus_swap. reflexivity.
+    }
+    rewrite -> H. rewrite -> IHm.
+    reflexivity.
+    Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (more_exercises)  *)
@@ -465,7 +493,7 @@ Check leb.
 Theorem leb_refl : forall n:nat,
   true = leb n n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  
 
 Theorem zero_nbeq_S : forall n:nat,
   beq_nat 0 (S n) = false.
